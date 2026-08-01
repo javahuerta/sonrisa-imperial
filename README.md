@@ -3,6 +3,9 @@
 Landing de una sola página para una clínica dental. Objetivo único: que el
 visitante solicite una cita.
 
+**En producción:** https://sonrisa-imperial-three-sable.vercel.app
+(desplegado desde `main`; cada push redespliega automáticamente)
+
 ## Archivos
 
 - `index.html` — estructura y contenido
