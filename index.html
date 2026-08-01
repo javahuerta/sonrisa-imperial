@@ -205,6 +205,12 @@
             <textarea id="mensaje" name="mensaje" rows="3"></textarea>
           </div>
 
+          <!-- Trampa antispam: oculta a la vista y fuera del recorrido de teclado -->
+          <div class="honeypot" aria-hidden="true">
+            <label for="empresa">Empresa</label>
+            <input type="text" id="empresa" name="empresa" tabindex="-1" autocomplete="off">
+          </div>
+
           <div class="field field-check">
             <input type="checkbox" id="privacidad" name="privacidad" required>
             <label for="privacidad">He leído y acepto la <a href="#">política de privacidad</a>.</label>
@@ -213,6 +219,8 @@
 
           <button type="submit" class="btn btn-block">Solicitar cita</button>
           <p class="form-note">Te contactamos para confirmar disponibilidad. Sin compromiso.</p>
+
+          <div class="form-error" id="form-error" role="alert" hidden></div>
 
           <div class="form-success" id="form-success" role="status" hidden>
             <strong>Solicitud enviada.</strong>

@@ -352,11 +352,32 @@ section[id] { scroll-margin-top: 74px; }
 .field-check a { color: var(--deep); }
 .field-check .error { grid-column: 2; }
 
+/* Trampa antispam: fuera de pantalla, nunca visible para una persona */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .form-note {
   margin-top: 14px;
   font-size: 0.8rem;
   color: var(--muted);
   text-align: center;
+}
+
+.btn:disabled { opacity: .6; cursor: progress; transform: none; }
+
+.form-error {
+  margin-top: 18px;
+  padding: 14px 16px;
+  background: #fdf2f0;
+  border: 1px solid #d8a396;
+  border-radius: var(--radius);
+  font-size: 0.87rem;
+  color: #8f3324;
 }
 
 .form-success {

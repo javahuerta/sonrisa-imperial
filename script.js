@@ -8,6 +8,9 @@
 
   const success = document.getElementById('form-success');
   const successName = document.getElementById('success-name');
+  const errorBox = document.getElementById('form-error');
+  const boton = form.querySelector('button[type="submit"]');
+  const textoBoton = boton.textContent;
 
   const rules = {
     nombre: {
@@ -63,8 +66,26 @@
     });
   });
 
-  form.addEventListener('submit', function (e) {
+  function mostrarError(msg) {
+    errorBox.textContent = msg;
+    errorBox.hidden = false;
+    errorBox.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+
+  function mostrarConfirmacion(nombreCompleto) {
+    const nombre = (nombreCompleto || '').trim().split(/\s+/)[0];
+    successName.textContent = nombre ? ', ' + nombre : '';
+
+    form.querySelectorAll('.field, .btn, .form-note').forEach((el) => {
+      el.style.display = 'none';
+    });
+    success.hidden = false;
+    success.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
+    errorBox.hidden = true;
 
     let firstInvalid = null;
     Object.keys(rules).forEach((name) => {
@@ -80,26 +101,38 @@
 
     const datos = Object.fromEntries(new FormData(form).entries());
 
-    // ── Aquí se conecta el backend / servicio de email ──────────────
-    // Ejemplo con un endpoint propio o un servicio tipo Formspree:
-    //
-    //   fetch('https://tu-endpoint.com/citas', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(datos)
-    //   })
-    //
-    // Mientras tanto, mostramos la confirmación en cliente.
-    console.log('Solicitud de cita:', datos);
-    // ────────────────────────────────────────────────────────────────
+    boton.disabled = true;
+    boton.textContent = 'Enviando…';
 
-    const nombre = (datos.nombre || '').trim().split(/\s+/)[0];
-    successName.textContent = nombre ? ', ' + nombre : '';
+    try {
+      const respuesta = await fetch('/api/cita', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+      });
 
-    form.querySelectorAll('.field, .btn, .form-note').forEach((el) => {
-      el.style.display = 'none';
-    });
-    success.hidden = false;
-    success.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      const resultado = await respuesta.json().catch(() => ({}));
+
+      if (!respuesta.ok) {
+        // El servidor revalida: si marca campos concretos, los señalamos.
+        Object.entries(resultado.errores || {}).forEach(([campo, msg]) => {
+          const el = form.elements[campo];
+          if (!el) return;
+          const field = fieldOf(el);
+          field.classList.add('invalid');
+          const error = field.querySelector('.error');
+          if (error) error.textContent = msg;
+        });
+        mostrarError(resultado.error || 'No hemos podido enviar tu solicitud. Inténtalo de nuevo en un momento.');
+        return;
+      }
+
+      mostrarConfirmacion(datos.nombre);
+    } catch (err) {
+      mostrarError('No hemos podido conectar. Revisa tu conexión o escríbenos a javahuerta@gmail.com.');
+    } finally {
+      boton.disabled = false;
+      boton.textContent = textoBoton;
+    }
   });
 })();

@@ -69,17 +69,50 @@ identidad de git configurada. Si quieres otro nombre público en GitHub:
 git config user.name "Tu Nombre" && git commit --amend --reset-author --no-edit
 ```
 
-## Conectar el formulario
+## El formulario de cita
 
-Ahora mismo el formulario valida en cliente y muestra una confirmación, pero
-**no envía nada a ningún sitio**. En `script.js` hay un bloque marcado donde
-conectar el backend: sustituye el `console.log` por un `fetch` a tu endpoint o
-a un servicio tipo Formspree / Getform, y muestra la confirmación solo cuando
-la respuesta sea correcta.
+`api/cita.js` es una función serverless que Vercel publica automáticamente en
+`/api/cita`. Recibe el formulario, lo revalida en servidor y envía un email con
+[Resend](https://resend.com). No usa el SDK de Resend sino su API REST vía
+`fetch`, así que el proyecto sigue sin `package.json` ni dependencias.
 
-Estando en Vercel, la opción más limpia es una función serverless: un archivo
-`api/cita.js` en el repo se publica solo como endpoint `/api/cita`, y desde ahí
-envías el email (Resend, SendGrid) sin exponer ninguna clave en el navegador.
+### Puesta en marcha
+
+**1. Crea la cuenta y la API key** en [resend.com/api-keys](https://resend.com/api-keys).
+
+**2. Añade la variable en Vercel**: *Project Settings* → *Environment Variables*
+
+| Variable | Obligatoria | Valor |
+|---|---|---|
+| `RESEND_API_KEY` | Sí | La clave `re_...` de Resend |
+| `CITAS_TO` | No | Destinatario (por defecto `javahuerta@gmail.com`) |
+| `CITAS_FROM` | No | Remitente; requiere dominio verificado en Resend |
+
+**3. Redespliega** (*Deployments* → *Redeploy*): las variables solo se aplican
+a despliegues nuevos.
+
+### Sobre el remitente
+
+Sin dominio propio, el envío sale desde `onboarding@resend.dev`, y Resend solo
+permite entregarlo **a la dirección de tu propia cuenta**. Suficiente para
+recibir las solicitudes tú, pero si algún día quieres enviar confirmaciones al
+paciente, hay que verificar un dominio en Resend y ponerlo en `CITAS_FROM`.
+
+### Detalles de implementación
+
+- **Revalidación en servidor**: la validación del navegador es comodidad, no
+  seguridad. El endpoint comprueba de nuevo cada campo y acota longitudes.
+- **`reply_to`**: al responder al email contestas directamente al paciente.
+- **Antispam**: campo trampa (*honeypot*) invisible; si viene relleno, la
+  solicitud se descarta y se responde igualmente con éxito para no dar pistas.
+- **Escapado HTML** de todos los datos antes de meterlos en el email.
+- **La clave nunca llega al navegador**: vive solo en la variable de entorno.
+
+### Probarlo en local
+
+No se puede: `/api/cita` solo existe en Vercel. Abriendo `index.html` con doble
+clic el envío fallará y verás el aviso de error (que es justo lo que debe pasar).
+Para probar el circuito completo, despliega y usa la URL de producción.
 
 ## Notas
 
