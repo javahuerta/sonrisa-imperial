@@ -40,13 +40,6 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Método no permitido.' });
   }
 
-  if (!process.env.RESEND_API_KEY) {
-    console.error('[cita] Falta la variable de entorno RESEND_API_KEY');
-    return res.status(500).json({
-      error: 'El formulario no está configurado todavía. Escríbenos a ' + DESTINATARIO + ' y te damos cita.'
-    });
-  }
-
   let cuerpo = req.body;
   if (typeof cuerpo === 'string') {
     try { cuerpo = JSON.parse(cuerpo); } catch { cuerpo = {}; }
@@ -78,6 +71,15 @@ module.exports = async function handler(req, res) {
 
   if (Object.keys(errores).length) {
     return res.status(400).json({ error: 'Revisa los campos marcados.', errores });
+  }
+
+  // La configuración se comprueba después de validar, para que los errores de
+  // campo lleguen al usuario aunque el envío no esté configurado todavía.
+  if (!process.env.RESEND_API_KEY) {
+    console.error('[cita] Falta la variable de entorno RESEND_API_KEY');
+    return res.status(500).json({
+      error: 'El formulario no está configurado todavía. Escríbenos a ' + DESTINATARIO + ' y te damos cita.'
+    });
   }
 
   const franja = FRANJAS.includes(preferencia) ? preferencia : 'Me adapto';
