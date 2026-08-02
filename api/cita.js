@@ -24,7 +24,32 @@ const MOTIVOS = [
 
 const FRANJAS = ['Mañana (9:00 – 14:00)', 'Tarde (15:00 – 20:00)', 'Me adapto'];
 
+const FECHA_ISO = /^\d{4}-\d{2}-\d{2}$/;
+
 const texto = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+
+// El día llega como AAAA-MM-DD y se formatea aquí: así no entra texto
+// arbitrario del navegador en el email, solo una fecha válida y acotada.
+function diaLegible(valor) {
+  if (!FECHA_ISO.test(valor)) return 'Sin preferencia';
+
+  const fecha = new Date(valor + 'T12:00:00Z');
+  if (Number.isNaN(fecha.getTime())) return 'Sin preferencia';
+
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  const limite = new Date(hoy);
+  limite.setDate(limite.getDate() + 90);
+
+  if (fecha < hoy || fecha > limite) return 'Sin preferencia';
+
+  return new Intl.DateTimeFormat('es-ES', {
+    timeZone: 'Europe/Madrid',
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long'
+  }).format(fecha);
+}
 
 const escapar = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({
@@ -57,6 +82,7 @@ module.exports = async function handler(req, res) {
   const telefono = texto(cuerpo.telefono, 30);
   const email = texto(cuerpo.email, 160);
   const motivo = texto(cuerpo.motivo, 60);
+  const dia = texto(cuerpo.dia, 10);
   const preferencia = texto(cuerpo.preferencia, 60);
   const mensaje = texto(cuerpo.mensaje, 2000);
   const privacidad = cuerpo.privacidad;
@@ -95,22 +121,23 @@ module.exports = async function handler(req, res) {
     ['Teléfono', telefono],
     ['Email', email || '—'],
     ['Motivo', motivo],
+    ['Día preferido', diaLegible(dia)],
     ['Franja preferida', franja],
     ['Mensaje', mensaje || '—'],
     ['Recibido', recibido]
   ];
 
   const html = `
-    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a18;line-height:1.6">
-      <h2 style="font-weight:500;color:#12332f;margin:0 0 16px">Nueva solicitud de cita</h2>
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1e2124;line-height:1.6">
+      <h2 style="font-weight:500;color:#5b1d46;margin:0 0 16px">Nueva solicitud de cita</h2>
       <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;max-width:560px">
         ${filas.map(([campo, valor]) => `
           <tr>
-            <td style="padding:10px 16px 10px 0;border-bottom:1px solid #e2ded3;color:#6b6f6b;font-size:13px;white-space:nowrap;vertical-align:top">${escapar(campo)}</td>
-            <td style="padding:10px 0;border-bottom:1px solid #e2ded3;font-size:15px">${escapar(valor).replace(/\n/g, '<br>')}</td>
+            <td style="padding:10px 16px 10px 0;border-bottom:1px solid #dce0de;color:#63696b;font-size:13px;white-space:nowrap;vertical-align:top">${escapar(campo)}</td>
+            <td style="padding:10px 0;border-bottom:1px solid #dce0de;font-size:15px">${escapar(valor).replace(/\n/g, '<br>')}</td>
           </tr>`).join('')}
       </table>
-      <p style="margin:20px 0 0;font-size:13px;color:#6b6f6b">Enviado desde el formulario de sonrisaimperial</p>
+      <p style="margin:20px 0 0;font-size:13px;color:#63696b">Enviado desde el formulario de sonrisaimperial</p>
     </div>`;
 
   const plano = filas.map(([campo, valor]) => `${campo}: ${valor}`).join('\n');
