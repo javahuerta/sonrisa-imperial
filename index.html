@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sonrisa Imperial — Clínica Dental</title>
-  <meta name="description" content="Clínica dental Sonrisa Imperial. Odontología general, estética y ortodoncia. Agenda tu cita en menos de un minuto.">
+  <meta name="description" content="Clínica dental Sonrisa Imperial, Madrid. Odontología general, estética, ortodoncia e implantes. Elige el día que te viene bien y te confirmamos la cita en menos de 24 h.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦷</text></svg>">
 </head>
@@ -24,49 +24,82 @@
         <span class="logo-text">Sonrisa <em>Imperial</em></span>
       </a>
       <nav class="nav" aria-label="Principal">
-        <a href="#servicios">Servicios</a>
+        <a href="#servicios">Tratamientos</a>
         <a href="#clinica">La clínica</a>
-        <a href="#cita" class="btn btn-sm">Agendar cita</a>
+        <a href="#cita" class="btn btn-sm">Pedir cita</a>
       </nav>
     </div>
   </header>
 
   <main id="inicio">
 
-    <!-- Hero -->
+    <!-- Hero: la agenda se abre aquí. Pedir cita empieza en el
+         primer scroll, no en el cuarto. -->
     <section class="hero">
       <div class="container hero-inner">
         <div class="hero-copy">
-          <p class="eyebrow">Clínica dental · Odontología integral</p>
-          <h1>Una sonrisa cuidada<br><em>con criterio.</em></h1>
-          <p class="lead">
-            Diagnóstico claro, tratamientos sin prisas y un equipo que te explica
-            cada paso. Agenda tu primera visita y valoramos tu caso sin compromiso.
+          <p class="eyebrow reveal">Clínica dental · Madrid centro</p>
+          <h1 class="reveal reveal-2">Una sonrisa cuidada<br><em>con criterio.</em></h1>
+          <p class="lead reveal reveal-2">
+            Diagnóstico explicado, presupuesto cerrado por escrito y el mismo
+            odontólogo de principio a fin. Dinos cuándo te viene bien y te
+            llamamos para confirmar.
           </p>
-          <div class="hero-actions">
-            <a href="#cita" class="btn">Agendar mi cita</a>
-            <a href="tel:+34600123456" class="btn btn-ghost">Llamar ahora</a>
+          <div class="hero-actions reveal reveal-3">
+            <a href="#cita" class="btn">Pedir cita</a>
+            <a href="tel:+34600123456" class="btn btn-ghost">Llamar al 600 123 456</a>
           </div>
-          <ul class="hero-points">
+          <ul class="hero-points reveal reveal-3">
             <li>Primera valoración sin coste</li>
             <li>Respuesta en menos de 24 h</li>
             <li>Financiación disponible</li>
           </ul>
         </div>
-        <div class="hero-figure" aria-hidden="true">
-          <div class="hero-card">
-            <span class="hero-card-num">15</span>
-            <span class="hero-card-label">años cuidando<br>sonrisas</span>
-          </div>
-        </div>
+
+        <form class="agenda reveal reveal-4" id="agenda" aria-labelledby="agenda-titulo">
+          <p class="agenda-titulo" id="agenda-titulo">¿Qué día te viene bien?</p>
+          <p class="agenda-sub">Empieza aquí y completamos el resto abajo.</p>
+
+          <fieldset class="agenda-grupo">
+            <legend class="agenda-etiqueta">Día</legend>
+            <div class="agenda-dias" id="agenda-dias"></div>
+          </fieldset>
+
+          <fieldset class="agenda-grupo">
+            <legend class="agenda-etiqueta">Franja</legend>
+            <div class="agenda-franjas" id="agenda-franjas">
+              <label class="chip chip-franja">
+                <input type="radio" name="agenda-franja" value="Mañana (9:00 – 14:00)" checked>
+                <span>Mañana</span>
+              </label>
+              <label class="chip chip-franja">
+                <input type="radio" name="agenda-franja" value="Tarde (15:00 – 20:00)">
+                <span>Tarde</span>
+              </label>
+              <label class="chip chip-franja">
+                <input type="radio" name="agenda-franja" value="Me adapto">
+                <span>Me adapto</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <button type="submit" class="btn btn-block">Continuar</button>
+          <p class="agenda-nota" id="agenda-nota">
+            Confirmamos la disponibilidad al llamarte: esto no es una reserva en firme.
+          </p>
+        </form>
       </div>
     </section>
 
-    <!-- Servicios -->
+    <!-- Tratamientos -->
     <section id="servicios" class="section">
       <div class="container">
-        <p class="eyebrow center">Qué hacemos</p>
-        <h2 class="section-title center">Tratamientos</h2>
+        <div class="section-head center">
+          <h2 class="section-title">Tratamientos</h2>
+          <p class="body-text center">
+            Todo lo que hacemos, con plazos y precio definidos antes de empezar.
+          </p>
+        </div>
         <div class="grid-3">
           <article class="card">
             <h3>Odontología general</h3>
@@ -101,11 +134,11 @@
       <div class="container split">
         <div>
           <p class="eyebrow">La clínica</p>
-          <h2 class="section-title">Menos ruido,<br>más criterio clínico.</h2>
+          <h2 class="section-title">Menos ruido,<br><em>más criterio.</em></h2>
           <p class="body-text">
-            En Sonrisa Imperial trabajamos con citas amplias para poder explicar,
-            enseñar las pruebas y decidir contigo. Sin tratamientos innecesarios
-            y con un presupuesto cerrado antes de empezar.
+            Trabajamos con citas amplias para poder explicar, enseñar las pruebas
+            y decidir contigo. Sin tratamientos innecesarios y con un presupuesto
+            cerrado antes de empezar.
           </p>
         </div>
         <ul class="feature-list">
@@ -129,8 +162,7 @@
     <section id="cita" class="section">
       <div class="container form-wrap">
         <div class="form-intro">
-          <p class="eyebrow">Reserva</p>
-          <h2 class="section-title">Agenda tu cita</h2>
+          <h2 class="section-title">Pide tu cita</h2>
           <p class="body-text">
             Déjanos tus datos y te confirmamos hora por teléfono o WhatsApp
             en menos de 24 horas laborables.
@@ -175,20 +207,27 @@
             </div>
           </div>
 
+          <div class="field">
+            <label for="motivo">Motivo de la visita</label>
+            <select id="motivo" name="motivo" required>
+              <option value="">Selecciona una opción</option>
+              <option>Revisión y limpieza</option>
+              <option>Estética dental</option>
+              <option>Ortodoncia</option>
+              <option>Implantes</option>
+              <option>Odontopediatría</option>
+              <option>Urgencia / dolor</option>
+              <option>Otro</option>
+            </select>
+            <span class="error" data-error-for="motivo"></span>
+          </div>
+
           <div class="field-row">
             <div class="field">
-              <label for="motivo">Motivo de la visita</label>
-              <select id="motivo" name="motivo" required>
-                <option value="">Selecciona una opción</option>
-                <option>Revisión y limpieza</option>
-                <option>Estética dental</option>
-                <option>Ortodoncia</option>
-                <option>Implantes</option>
-                <option>Odontopediatría</option>
-                <option>Urgencia / dolor</option>
-                <option>Otro</option>
+              <label for="dia">Día preferido</label>
+              <select id="dia" name="dia">
+                <option value="">Sin preferencia</option>
               </select>
-              <span class="error" data-error-for="motivo"></span>
             </div>
             <div class="field">
               <label for="preferencia">Franja preferida</label>
@@ -217,8 +256,8 @@
             <span class="error" data-error-for="privacidad"></span>
           </div>
 
-          <button type="submit" class="btn btn-block">Solicitar cita</button>
-          <p class="form-note">Te contactamos para confirmar disponibilidad. Sin compromiso.</p>
+          <button type="submit" class="btn btn-block">Enviar solicitud</button>
+          <p class="form-note">Te llamamos para confirmar disponibilidad. Sin compromiso.</p>
 
           <div class="form-error" id="form-error" role="alert" hidden></div>
 

@@ -1,4 +1,4 @@
-/* Sonrisa Imperial — validación y envío del formulario de cita */
+/* Sonrisa Imperial — agenda del hero, validación y envío del formulario */
 
 (function () {
   'use strict';
@@ -11,6 +11,130 @@
   const errorBox = document.getElementById('form-error');
   const boton = form.querySelector('button[type="submit"]');
   const textoBoton = boton.textContent;
+
+  /* --- Agenda del hero ---------------------------------------------------
+     Elegir día y franja arriba rellena el formulario de abajo. No afirma
+     disponibilidad: es una preferencia que la clínica confirma al llamar. */
+
+  const TARDE = 'Tarde (15:00 – 20:00)';
+  const MANANA = 'Mañana (9:00 – 14:00)';
+  const DIAS_VISIBLES = 6;
+
+  const agenda = document.getElementById('agenda');
+  const selectDia = form.elements.dia;
+  const selectFranja = form.elements.preferencia;
+
+  const iso = (d) =>
+    d.getFullYear() + '-' +
+    String(d.getMonth() + 1).padStart(2, '0') + '-' +
+    String(d.getDate()).padStart(2, '0');
+
+  const esSabado = (d) => d.getDay() === 6;
+
+  // Domingo cerrado: se salta al construir la lista.
+  function proximosDias(cantidad) {
+    const dias = [];
+    const cursor = new Date();
+    cursor.setHours(0, 0, 0, 0);
+
+    while (dias.length < cantidad) {
+      cursor.setDate(cursor.getDate() + 1);
+      if (cursor.getDay() !== 0) dias.push(new Date(cursor));
+    }
+    return dias;
+  }
+
+  const abrevDia = new Intl.DateTimeFormat('es-ES', { weekday: 'short' });
+  const nombreLargo = new Intl.DateTimeFormat('es-ES', {
+    weekday: 'long', day: 'numeric', month: 'long'
+  });
+
+  const dias = proximosDias(DIAS_VISIBLES);
+  const sabados = new Set(dias.filter(esSabado).map(iso));
+
+  // El sábado se cierra a las 14:00, así que la franja de tarde no existe.
+  function ajustarTarde(valorDia) {
+    const cerrado = sabados.has(valorDia);
+
+    const opcionTarde = Array.from(selectFranja.options).find((o) => o.value === TARDE);
+    if (opcionTarde) {
+      opcionTarde.disabled = cerrado;
+      if (cerrado && selectFranja.value === TARDE) selectFranja.value = MANANA;
+    }
+
+    if (agenda) {
+      const radioTarde = agenda.querySelector('input[name="agenda-franja"][value="' + TARDE + '"]');
+      if (radioTarde) {
+        radioTarde.disabled = cerrado;
+        if (cerrado && radioTarde.checked) {
+          const radioManana = agenda.querySelector('input[name="agenda-franja"][value="' + MANANA + '"]');
+          if (radioManana) radioManana.checked = true;
+        }
+      }
+    }
+  }
+
+  if (selectDia) {
+    dias.forEach((d) => {
+      const opcion = document.createElement('option');
+      opcion.value = iso(d);
+      opcion.textContent = nombreLargo.format(d);
+      selectDia.appendChild(opcion);
+    });
+    selectDia.addEventListener('change', () => ajustarTarde(selectDia.value));
+  }
+
+  if (agenda) {
+    const contenedor = document.getElementById('agenda-dias');
+
+    dias.forEach((d) => {
+      const valor = iso(d);
+      const etiqueta = document.createElement('label');
+      etiqueta.className = 'chip chip-dia';
+
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'agenda-dia';
+      radio.value = valor;
+
+      // La abreviatura y el número son la lectura visual; quien usa lector de
+      // pantalla oye la fecha completa y no "LUN 3, lunes 3 de agosto".
+      const sem = document.createElement('span');
+      sem.className = 'chip-sem';
+      sem.setAttribute('aria-hidden', 'true');
+      sem.textContent = abrevDia.format(d).replace('.', '').slice(0, 3).toUpperCase();
+
+      const num = document.createElement('span');
+      num.className = 'chip-num';
+      num.setAttribute('aria-hidden', 'true');
+      num.textContent = d.getDate();
+
+      const oculto = document.createElement('span');
+      oculto.className = 'sr-only';
+      oculto.textContent = nombreLargo.format(d);
+
+      etiqueta.append(radio, sem, num, oculto);
+      contenedor.appendChild(etiqueta);
+    });
+
+    contenedor.addEventListener('change', (e) => ajustarTarde(e.target.value));
+
+    agenda.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const dia = agenda.querySelector('input[name="agenda-dia"]:checked');
+      const franja = agenda.querySelector('input[name="agenda-franja"]:checked');
+
+      if (dia && selectDia) selectDia.value = dia.value;
+      if (franja) selectFranja.value = franja.value;
+      ajustarTarde(selectDia ? selectDia.value : '');
+
+      document.getElementById('cita').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      form.elements.nombre.focus({ preventScroll: true });
+    });
+  }
+
+  /* --- Validación en cliente -------------------------------------------- */
 
   const rules = {
     nombre: {

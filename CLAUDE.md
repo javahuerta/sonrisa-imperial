@@ -37,9 +37,15 @@ explícita.
 Convenciones a respetar:
 
 - **Idioma: español** en textos, comentarios, nombres de variables y commits.
-- **Colores solo por variables CSS** (`--deep`, `--gold`, `--sand`…). Nunca
-  hardcodear un color nuevo en una regla: se cambia el token.
-- **Tipografía**: `Fraunces` (serif, titulares) + `Inter` (sans, texto).
+- **Colores solo por variables CSS** (`--porcelana`, `--grafito`, `--imperial`,
+  `--linea`, `--tenue`…). Nunca hardcodear un color nuevo en una regla: se
+  cambia el token.
+- **El acento se gasta una vez**: `--imperial` (púrpura de Tiro) llena superficie
+  solo en las acciones. La selección de la agenda usa anillo y tinte, no relleno.
+  Si el acento aparece en cinco sitios deja de ser acento.
+- **Tipografía, tres papeles**: `Bodoni Moda` (display, solo h1/h2 y con
+  contención), `IBM Plex Sans` (texto y formularios), `IBM Plex Mono`
+  (horarios, teléfono, etiquetas y fichas de la agenda: lectura de ficha clínica).
 - **Validación duplicada**: la del navegador es comodidad; el endpoint revalida
   siempre en servidor y acota longitudes. No eliminar la del servidor.
 - **Sin secretos en el navegador**: `RESEND_API_KEY` vive solo en variables de
@@ -53,9 +59,13 @@ Convenciones a respetar:
 El orden de secciones es la plantilla probada; mantenerlo salvo que el cliente
 pida otra cosa:
 
-1. **Header sticky** con CTA "Agendar cita" siempre visible.
+1. **Header sticky** con CTA "Pedir cita" siempre visible.
 2. **Hero** — promesa + doble CTA (formulario y `tel:`) + 3 pruebas rápidas
-   (primera valoración sin coste, respuesta <24 h, financiación).
+   (primera valoración sin coste, respuesta <24 h, financiación) + **la agenda**
+   en la columna derecha: elegir día y franja arriba rellena el formulario de
+   abajo. Es la firma de la plantilla y el motivo de que pedir cita empiece en
+   el primer scroll. No afirma disponibilidad — es una preferencia que la
+   clínica confirma al llamar, y así debe seguir redactada.
 3. **Tratamientos** — rejilla de servicios de la clínica.
 4. **La clínica** — diferenciadores concretos (presupuesto cerrado, tecnología,
    mismo profesional), no adjetivos vacíos.
@@ -63,8 +73,10 @@ pida otra cosa:
    dirección, horario).
 6. **Footer** con aviso legal y política de privacidad.
 
-Formulario: nombre, teléfono, email opcional, motivo, franja preferida, mensaje,
-honeypot antispam y consentimiento de privacidad obligatorio.
+Formulario: nombre, teléfono, email opcional, motivo, día preferido, franja
+preferida, mensaje, honeypot antispam y consentimiento de privacidad
+obligatorio. El día viaja como `AAAA-MM-DD` y lo formatea el servidor: así no
+entra texto libre del navegador en el email.
 
 ## Al clonar para un cliente nuevo
 
@@ -73,9 +85,12 @@ Lo que siempre hay que personalizar:
 1. Nombre de la clínica, logo y `<title>` / `meta description`.
 2. Teléfono (`tel:` incluido), email, dirección, horario.
 3. Paleta en `:root` de [styles.css](styles.css).
-4. Lista de tratamientos y cifras del hero (años, pacientes…).
-5. Enlaces reales de política de privacidad y aviso legal.
-6. `CITAS_TO` en Vercel (destinatario de las solicitudes).
+4. Lista de tratamientos.
+5. **Horario en la agenda**: [script.js](script.js) salta los domingos y
+   deshabilita la franja de tarde los sábados, porque esta clínica cierra a las
+   14:00. Cada cliente tiene su horario: ajustar esas reglas o la agenda mentirá.
+6. Enlaces reales de política de privacidad y aviso legal.
+7. `CITAS_TO` en Vercel (destinatario de las solicitudes).
 
 ## Cumplimiento (no negociable)
 
